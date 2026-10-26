@@ -51,7 +51,7 @@ class Reportes:
         self,
         df: pd.DataFrame,
         regresion: object,
-        ruta: str | Path = "entrenamiento/reporte_regresion_lineal.txt",
+        ruta: str | Path = "reportes/reporte_regresion_lineal.txt",
     ) -> Path:
         """Genera un TXT con el DataFrame y los resultados de una regresión.
 

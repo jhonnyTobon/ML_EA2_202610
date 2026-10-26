@@ -12,6 +12,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 
+from .reportes import Reportes
+
 
 class RegresionLineal:
     """Encapsula el flujo de regresión lineal para cualquier DataFrame compatible."""
@@ -795,14 +797,19 @@ class RegresionLineal:
             "fecha_registro": datetime.now().isoformat(timespec="seconds"),
         }
 
-    def ejecutar(self, df: pd.DataFrame) -> dict[str, Any]:
+    def ejecutar(
+        self,
+        df: pd.DataFrame,
+        directorio_reportes: str | Path = "reportes",
+    ) -> dict[str, Any]:
         """Ejecuta todo el flujo y conserva cada resultado en la instancia.
 
         El método recibe el DataFrame una sola vez y ejecuta, en orden,
         preparación, división, entrenamiento, predicción, extracción de
-        parámetros y evaluación. Cada etapa informa su nombre por consola y
-        deja su resultado disponible en atributos como ``self.X_train``,
-        ``self.ruta_modelo`` o ``self.metricas``.
+        parámetros, evaluación y guardado del reporte final. Cada etapa
+        informa su nombre por consola y deja su resultado disponible en
+        atributos como ``self.X_train``, ``self.ruta_modelo`` o
+        ``self.metricas``.
         """
         self.paso_actual = "preparar_datos"
         print("[ejecutar][1/6] Iniciando preparar_datos.")
@@ -840,6 +847,13 @@ class RegresionLineal:
             X_test,
             y_test,
         )
+        ruta_reporte = Path(directorio_reportes) / "reporte_regresion_lineal.txt"
+        reportes = Reportes()
+        reporte_guardado = reportes.reporte_regresion_lineal(
+            df=df,
+            regresion=self,
+            ruta=ruta_reporte,
+        )
         self.paso_actual = "completado"
         print("[ejecutar] flujo completo terminado.")
         return {
@@ -855,6 +869,7 @@ class RegresionLineal:
             "predicciones": predicciones,
             "parametros": parametros,
             "metricas": metricas,
+            "ruta_reporte": reporte_guardado,
         }
 
     @staticmethod
